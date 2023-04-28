@@ -13,11 +13,13 @@ then
   then
     echo "Error while creating new user!"
   fi
+  USER_ID=$($PSQL "SELECT user_id FROM users WHERE name='$USERNAME'")
   echo "Welcome, $USERNAME! It looks like this is your first time here."
 #if yes showing his history
 else  
   GAMES_PLAYED=$($PSQL "SELECT COUNT(*) FROM games INNER JOIN users USING (user_id) WHERE name='$USERNAME' ")
   echo $GAMES_PLAYED
+  USER_ID=$(echo $CHECK_USER_IN_DB | cut -d '|' -f 2)
   if [[ $GAMES_PLAYED == 0 ]]
   then
     GAMES_PLAYED=0
@@ -33,7 +35,7 @@ RAND=$(( RANDOM % 1000 + 1 ))
 NUMBER_OF_TRIES=1
 #loop for user's guesses
 echo "Guess the secret number between 1 and 1000:"
-USER_ID=$($PSQL "SELECT user_id FROM users WHERE name='$USERNAME'")
+#USER_ID=$($PSQL "SELECT user_id FROM users WHERE name='$USERNAME'")
 #read user's guess
 read GUESS 
 until [[ $GUESS == $RAND ]]
