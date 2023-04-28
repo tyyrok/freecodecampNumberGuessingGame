@@ -33,6 +33,7 @@ RAND=$(( RANDOM % 1000 + 1 ))
 NUMBER_OF_TRIES=1
 #loop for user's guesses
 echo "Guess the secret number between 1 and 1000:"
+USER_ID=$($PSQL "SELECT user_id FROM users WHERE name='$USERNAME'")
 #read user's guess
 read GUESS 
 until [[ $GUESS == $RAND ]]
@@ -54,7 +55,6 @@ do
   (( NUMBER_OF_TRIES+=1 ))
 done
 #make a record in DB
-USER_ID=$($PSQL "SELECT user_id FROM users WHERE name='$USERNAME'")
 CREATE_NEW_GAME=$($PSQL "INSERT INTO games (best_game, user_id) VALUES ($NUMBER_OF_TRIES, $USER_ID)")
   if [[ -z $CREATE_NEW_GAME ]]
   then
