@@ -4,7 +4,7 @@ echo -e "\n~~~~~ Number Guessing Game ~~~~~"
 echo "Enter your username:"
 read -n 22 USERNAME
 #check if user exists in db
-CHECK_USER_IN_DB=$($PSQL "SELECT name FROM users WHERE name='$USERNAME' ")
+CHECK_USER_IN_DB=$($PSQL "SELECT name, user_id FROM users WHERE name='$USERNAME' ")
 #if not creating user
 if [[ -z $CHECK_USER_IN_DB ]]
 then
@@ -13,7 +13,7 @@ then
   then
     echo "Error while creating new user!"
   fi
-  echo -e "\nWelcome, $USERNAME! It looks like is your first time here."
+  echo "Welcome, $USERNAME! It looks like this is your first time here."
 #if yes showing his history
 else  
   GAMES_PLAYED=$($PSQL "SELECT COUNT(*) FROM games INNER JOIN users USING (user_id) WHERE name='$USERNAME' ")
@@ -23,7 +23,7 @@ else
     GAMES_PLAYED=0
     BEST_GAME=0
   else
-    BEST_GAME=$($PSQL "SELECT MAX(best_game) FROM games INNER JOIN users USING (user_id) WHERE name='$USERNAME' ")
+    BEST_GAME=$($PSQL "SELECT MIN(best_game) FROM games INNER JOIN users USING (user_id) WHERE name='$USERNAME' ")
   fi
   echo "Welcome back, $USERNAME! You have played $GAMES_PLAYED games, and your best game took $BEST_GAME guesses."
 fi
@@ -42,6 +42,7 @@ do
   do
     echo "That is not an integer, guess again:"
     read GUESS
+    (( NUMBER_OF_TRIES+=1 ))
   done
   if [[ $GUESS -lt $RAND ]]
   then
@@ -60,6 +61,7 @@ CREATE_NEW_GAME=$($PSQL "INSERT INTO games (best_game, user_id) VALUES ($NUMBER_
     echo "Error while creating new user!"
   fi
 #show congrat message
+
 echo "You guessed it in $NUMBER_OF_TRIES tries. The secret number was $RAND. Nice job!"
 
 
