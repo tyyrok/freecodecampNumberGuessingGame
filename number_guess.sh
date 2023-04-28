@@ -17,7 +17,8 @@ then
 #if yes showing his history
 else  
   GAMES_PLAYED=$($PSQL "SELECT COUNT(*) FROM games INNER JOIN users USING (user_id) WHERE name='$USERNAME' ")
-  if [[ $GAMES_PLAYED=0 ]]
+  echo $GAMES_PLAYED
+  if [[ $GAMES_PLAYED == 0 ]]
   then
     GAMES_PLAYED=0
     BEST_GAME=0
@@ -52,7 +53,12 @@ do
   (( NUMBER_OF_TRIES+=1 ))
 done
 #make a record in DB
-
+USER_ID=$($PSQL "SELECT user_id FROM users WHERE name='$USERNAME'")
+CREATE_NEW_GAME=$($PSQL "INSERT INTO games (best_game, user_id) VALUES ($NUMBER_OF_TRIES, $USER_ID)")
+  if [[ -z $CREATE_NEW_GAME ]]
+  then
+    echo "Error while creating new user!"
+  fi
 #show congrat message
 echo "You guessed it in $NUMBER_OF_TRIES tries. The secret number was $RAND. Nice job!"
 
