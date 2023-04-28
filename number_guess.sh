@@ -28,13 +28,33 @@ else
 fi
 #game body
 #generating random from 1 to 1000
-
+RAND=$(( RANDOM % 1000 + 1 ))
+NUMBER_OF_TRIES=1
 #loop for user's guesses
-
+echo "Guess the secret number between 1 and 1000:"
 #read user's guess
-
-#if yes?
-#show congrat message
+read GUESS 
+until [[ $GUESS == $RAND ]]
+do
+  #Checking ig guess is correct?
+  while [[ ! $GUESS =~ ^[0-9]+$ ]]
+  do
+    echo "That is not an integer, guess again:"
+    read GUESS
+  done
+  if [[ $GUESS -lt $RAND ]]
+  then
+    echo "It's lower than that, guess again:"
+  else
+    echo "It's higher than that, guess again:"
+  fi
+  read GUESS
+  (( NUMBER_OF_TRIES+=1 ))
+done
 #make a record in DB
 
-#if no? 
+#show congrat message
+echo "You guessed it in $NUMBER_OF_TRIES tries. The secret number was $RAND. Nice job!"
+
+
+
